@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iStudy — الرئيسية</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { cairo: ['Cairo', 'sans-serif'] },
+          colors: {
+            ksu: {
+              50: '#f0f7ff', 100: '#e0effe', 200: '#b9dffd',
+              500: '#0c8ae6', 600: '#006dc4', 700: '#01579f', 800: '#064a83',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>body { font-family: 'Cairo', sans-serif; }</style>
+</head>
+<body class="bg-ksu-50 text-slate-800 min-h-screen flex flex-col">
+
+  <header class="py-6 text-center">
+    <a href="index.html" class="inline-flex items-center gap-2">
+      <span class="w-10 h-10 rounded-xl bg-ksu-600 text-white flex items-center justify-center text-lg font-bold">i</span>
+      <span class="text-2xl font-bold text-ksu-800">iStudy</span>
+    </a>
+    <p class="text-slate-500 text-sm mt-2">مبادرة من طالب لتسهيل عملية الدراسة</p>
+  </header>
+
+  <main class="flex-1 flex items-center justify-center px-4 pb-16">
+    <div class="w-full max-w-lg grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+      <a href="gpa.html"
+        class="group bg-white rounded-2xl border border-ksu-100 p-8 text-center hover:border-ksu-300 hover:shadow-lg transition-all active:scale-[0.98]">
+        <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-ksu-100 text-ksu-600 flex items-center justify-center group-hover:bg-ksu-600 group-hover:text-white transition-colors">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+          </svg>
+        </div>
+        <h2 class="text-lg font-bold text-ksu-800 mb-1">حاسبة المعدل</h2>
+        <p class="text-sm text-slate-500">احسب معدلك الفصلي والتراكمي</p>
+      </a>
+
+      <a href="absence.html"
+        class="group bg-white rounded-2xl border border-ksu-100 p-8 text-center hover:border-ksu-300 hover:shadow-lg transition-all active:scale-[0.98]">
+        <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-ksu-100 text-ksu-600 flex items-center justify-center group-hover:bg-ksu-600 group-hover:text-white transition-colors">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h2 class="text-lg font-bold text-ksu-800 mb-1">حاسبة الغياب</h2>
+        <p class="text-sm text-slate-500">اعرف نسبة غيابك وكم متبقي لك</p>
+      </a>
+
+    </div>
+  </main>
+
+  <footer class="py-6 text-center text-slate-400 text-xs">
+     مبادرة iStudy  
+  </footer>
+
+</body>
+</html>

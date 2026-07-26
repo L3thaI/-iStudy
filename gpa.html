@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iStudy — حاسبة المعدل</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { cairo: ['Cairo', 'sans-serif'] },
+          colors: {
+            ksu: {
+              50: '#f0f7ff', 100: '#e0effe', 200: '#b9dffd',
+              500: '#0c8ae6', 600: '#006dc4', 700: '#01579f', 800: '#064a83',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+
+    .course-card {
+      animation: slideIn .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; animation: panelIn .25s ease-out; }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .grade-chip { opacity: .45; transform: scale(.92); }
+    .grade-chip.selected {
+      opacity: 1; transform: scale(1.1);
+      box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    }
+
+    .result-pop { animation: resultPop .5s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes resultPop {
+      from { opacity: 0; transform: scale(.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .gauge-ring {
+      transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+
+    #toggle-indicator { transition: transform .25s cubic-bezier(.4,0,.2,1); }
+
+    .toast {
+      animation: toastIn .3s ease-out, toastOut .3s ease-in 2.7s forwards;
+    }
+    @keyframes toastIn  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(-8px); } }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-ksu-50 to-white text-slate-800 min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-ksu-100/80">
+    <div class="max-w-lg mx-auto px-4 py-3.5 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-1.5 text-sm text-ksu-600 hover:text-ksu-800 font-semibold transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+        </svg>
+        الرئيسية
+      </a>
+      <div class="flex items-center gap-1.5">
+        <span class="w-7 h-7 rounded-lg bg-ksu-600 text-white text-xs font-bold flex items-center justify-center">i</span>
+        <span class="font-bold text-ksu-800">iStudy</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-lg mx-auto px-4 py-6 pb-28">
+
+    <!-- Title -->
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-extrabold text-ksu-900">حاسبة المعدل</h1>
+      <p class="text-slate-400 text-xs mt-1">نظام KSU — من 5.0</p>
+    </div>
+
+    <!-- Segmented Toggle: يمين = فصلي ، يسار = تراكمي -->
+    <div class="relative bg-ksu-100/80 rounded-2xl p-1 flex mb-6">
+      <div id="toggle-indicator"
+        class="absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-xl shadow-sm"></div>
+      <button type="button" data-mode="semester"
+        class="mode-tab relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-ksu-700">
+        المعدل الفصلي
+      </button>
+      <button type="button" data-mode="cumulative"
+        class="mode-tab relative z-10 flex-1 py-2.5 text-sm font-bold rounded-xl transition-colors text-slate-400">
+        المعدل التراكمي
+      </button>
+    </div>
+
+    <!-- ===== الفصلي ===== -->
+    <div id="panel-semester" class="panel active">
+      <div id="courses-container-semester" class="space-y-3"></div>
+
+      <button id="add-course-semester" type="button"
+        class="w-full mt-3 group py-3.5 rounded-2xl border-2 border-dashed border-ksu-200 text-ksu-500 font-semibold text-sm hover:border-ksu-400 hover:text-ksu-700 hover:bg-ksu-50/80 transition-all flex items-center justify-center gap-2">
+        <span class="w-6 h-6 rounded-full bg-ksu-100 group-hover:bg-ksu-200 flex items-center justify-center transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+        </span>
+        إضافة مادة
+      </button>
+    </div>
+
+    <!-- ===== التراكمي ===== -->
+    <div id="panel-cumulative" class="panel">
+
+      <div class="bg-white rounded-2xl border border-ksu-100 p-4 mb-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="w-6 h-6 rounded-md bg-ksu-100 text-ksu-600 flex items-center justify-center">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </span>
+          <h3 class="text-sm font-bold text-ksu-800">سجلك السابق</h3>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">الساعات المنجزة</label>
+            <input type="number" id="prev-hours" min="0" placeholder="60"
+              class="w-full px-3 py-2.5 rounded-xl bg-ksu-50 border border-ksu-100 focus:border-ksu-400 focus:ring-2 focus:ring-ksu-100 outline-none text-center text-lg font-bold text-ksu-800" dir="ltr">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">المعدل السابق</label>
+            <input type="number" id="prev-gpa" min="0" max="5" step="0.01" placeholder="4.25"
+              class="w-full px-3 py-2.5 rounded-xl bg-ksu-50 border border-ksu-100 focus:border-ksu-400 focus:ring-2 focus:ring-ksu-100 outline-none text-center text-lg font-bold text-ksu-800" dir="ltr">
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs font-semibold text-slate-400 mb-2 px-1">مواد الفصل الحالي</p>
+      <div id="courses-container-cumulative" class="space-y-3"></div>
+
+      <button id="add-course-cumulative" type="button"
+        class="w-full mt-3 group py-3.5 rounded-2xl border-2 border-dashed border-ksu-200 text-ksu-500 font-semibold text-sm hover:border-ksu-400 hover:text-ksu-700 hover:bg-ksu-50/80 transition-all flex items-center justify-center gap-2">
+        <span class="w-6 h-6 rounded-full bg-ksu-100 group-hover:bg-ksu-200 flex items-center justify-center transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+          </svg>
+        </span>
+        إضافة مادة
+      </button>
+    </div>
+
+    <!-- Live Stats -->
+    <div id="live-stats" class="mt-5 flex items-center justify-center gap-4 text-center">
+      <div>
+        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">المواد</p>
+        <p id="stat-courses" class="text-lg font-extrabold text-ksu-700">0</p>
+      </div>
+      <div class="w-px h-8 bg-ksu-200"></div>
+      <div>
+        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">الساعات</p>
+        <p id="stat-hours" class="text-lg font-extrabold text-ksu-700" dir="ltr">0</p>
+      </div>
+      <div class="w-px h-8 bg-ksu-200"></div>
+      <div>
+        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">المعدل المتوقع</p>
+        <p id="stat-gpa" class="text-lg font-extrabold text-ksu-700" dir="ltr">—</p>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div id="result-box" class="hidden mt-6 result-pop">
+      <div class="bg-white rounded-3xl border border-ksu-100 shadow-lg overflow-hidden">
+        <div id="result-header" class="px-6 pt-6 pb-4 text-center">
+          <p id="result-label" class="text-xs font-semibold text-slate-400"></p>
+          <div class="relative w-36 h-36 mx-auto my-3">
+            <svg class="w-full h-full" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#e0effe" stroke-width="8"/>
+              <circle id="gauge-ring" class="gauge-ring" cx="60" cy="60" r="52" fill="none"
+                stroke="#006dc4" stroke-width="8" stroke-linecap="round"
+                stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <p id="result-gpa" class="text-3xl font-extrabold text-ksu-800" dir="ltr">0.00</p>
+              <p class="text-[10px] text-slate-400 font-semibold">من 5.0</p>
+            </div>
+          </div>
+          <p id="result-message" class="text-sm font-bold"></p>
+        </div>
+        <div id="result-details" class="px-6 py-3 bg-ksu-50 border-t border-ksu-100 text-center text-xs text-slate-500"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Sticky Calculate -->
+  <div class="fixed bottom-0 inset-x-0 z-40 p-4 bg-gradient-to-t from-white via-white/95 to-transparent">
+    <div class="max-w-lg mx-auto">
+      <button id="calc-btn" type="button"
+        class="w-full py-4 bg-ksu-600 text-white rounded-2xl font-extrabold text-base hover:bg-ksu-700 active:scale-[.98] transition-all shadow-lg shadow-ksu-600/25">
+        احسب المعدل الفصلي
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-24 inset-x-0 z-50 flex justify-center pointer-events-none hidden">
+    <p class="toast bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xl"></p>
+  </div>
+
+  <script src="gpa.js"></script>
+</body>
+</html>
