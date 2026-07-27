@@ -3,12 +3,6 @@ const gradePoints = {
   'ج+': 3.5, 'ج': 3.0, 'د+': 2.5, 'د': 2.0, 'هـ': 1.0,
 };
 
-const gradeColors = {
-  'أ+': 'bg-emerald-500', 'أ': 'bg-emerald-400', 'ب+': 'bg-teal-400',
-  'ب': 'bg-sky-400', 'ج+': 'bg-amber-400', 'ج': 'bg-orange-400',
-  'د+': 'bg-orange-500', 'د': 'bg-red-400', 'هـ': 'bg-red-600',
-};
-
 const gradeStripe = {
   'أ+': 'from-emerald-500 to-emerald-400', 'أ': 'from-emerald-400 to-teal-400',
   'ب+': 'from-teal-400 to-sky-400', 'ب': 'from-sky-400 to-sky-300',
@@ -17,10 +11,20 @@ const gradeStripe = {
   'هـ': 'from-red-600 to-red-700',
 };
 
+const selectColors = {
+  'أ+': 'bg-emerald-50 border-emerald-200 text-emerald-700',
+  'أ': 'bg-emerald-50 border-emerald-200 text-emerald-600',
+  'ب+': 'bg-teal-50 border-teal-200 text-teal-700',
+  'ب': 'bg-sky-50 border-sky-200 text-sky-700',
+  'ج+': 'bg-amber-50 border-amber-200 text-amber-700',
+  'ج': 'bg-orange-50 border-orange-200 text-orange-700',
+  'د+': 'bg-orange-100 border-orange-300 text-orange-800',
+  'د': 'bg-red-50 border-red-200 text-red-700',
+  'هـ': 'bg-red-100 border-red-300 text-red-800',
+};
+
 const HOUR_MIN = 1;
 const HOUR_MAX = 15;
-// تم التعديل لتكون متتابعة ومطابقة لعدد التقديرات (9 أزرار)
-const HOUR_QUICK = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const GAP = 326.73; 
 let currentMode = 'semester';
 
@@ -63,124 +67,79 @@ function toast(msg) {
 function createCourseCard(containerId) {
   const num = document.querySelectorAll(`#${containerId} .course-card`).length + 1;
   const card = document.createElement('div');
-  card.className = 'course-card relative bg-white rounded-2xl border border-ksu-100 shadow-sm overflow-hidden';
+  // تعديل التصميم ليكون نحيفاً جداً (شريط واحد)
+  card.className = 'course-card relative bg-white rounded-xl border border-ksu-100 shadow-sm overflow-hidden mb-2';
   card.dataset.selectedGrade = 'أ+';
 
-  const gradeChips = Object.keys(gradePoints).map((g) =>
-    `<button type="button" data-grade="${g}"
-      class="grade-chip flex items-center justify-center ${g === 'أ+' ? 'selected' : ''} ${gradeColors[g]} text-white w-9 h-9 rounded-xl text-xs font-extrabold transition-all duration-200">${g}</button>`
+  // إنشاء خيارات التقدير
+  const gradeOptions = Object.keys(gradePoints).map((g) =>
+    `<option value="${g}">${g}</option>`
   ).join('');
 
-  const quickBtns = HOUR_QUICK.map((h) =>
-    `<button type="button" data-hours="${h}"
-      class="hour-quick flex items-center justify-center w-9 h-9 rounded-xl text-xs font-extrabold transition-all duration-200 ${
-        h === 3 ? 'bg-ksu-600 text-white scale-110 shadow-[0_4px_14px_rgba(0,0,0,0.18)] opacity-100' : 'bg-ksu-50 text-slate-500 hover:bg-ksu-100 opacity-60 scale-95'
-      }">${h}</button>`
+  // إنشاء خيارات الساعات (من 1 إلى 15)
+  const hourOptions = Array.from({ length: 15 }, (_, i) => i + 1).map((h) =>
+    `<option value="${h}" ${h === 3 ? 'selected' : ''}>${h}</option>`
   ).join('');
 
   card.innerHTML = `
     <div class="grade-stripe absolute top-0 bottom-0 right-0 w-1 bg-gradient-to-b ${gradeStripe['أ+']} transition-all duration-300"></div>
-    <div class="p-4 pr-5">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="course-num w-6 h-6 rounded-lg bg-ksu-600 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0">${num}</span>
-        <input type="text" class="course-name flex-1 text-sm font-bold text-slate-700 bg-transparent outline-none placeholder:text-slate-300 placeholder:font-normal" placeholder="اسم المادة">
-        <button type="button" class="remove-btn w-7 h-7 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-all shrink-0">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="mb-3">
-        <span class="text-[10px] font-bold text-slate-400 block mb-2">عدد الساعات</span>
-        <div class="flex items-center gap-2">
-          <button type="button" class="hours-minus w-10 h-10 rounded-xl bg-ksu-50 text-ksu-700 text-lg font-bold hover:bg-ksu-100 active:scale-95 transition-all shrink-0">−</button>
-          <div class="flex-1 flex items-center justify-center gap-1.5 bg-ksu-50 rounded-xl border border-ksu-100 px-3 py-2">
-            <input type="number" class="course-hours w-12 bg-transparent text-center text-xl font-extrabold text-ksu-800 outline-none" dir="ltr"
-              value="3" min="${HOUR_MIN}" max="${HOUR_MAX}" inputmode="numeric">
-            <span class="hours-label text-xs font-semibold text-slate-400">ساعات</span>
-          </div>
-          <button type="button" class="hours-plus w-10 h-10 rounded-xl bg-ksu-50 text-ksu-700 text-lg font-bold hover:bg-ksu-100 active:scale-95 transition-all shrink-0">+</button>
-        </div>
-        
-        <div class="flex items-start gap-3 mt-4">
-          <span class="text-[10px] font-bold text-slate-400 shrink-0 w-10 pt-2">سريع</span>
-          <div class="flex flex-wrap gap-1.5">${quickBtns}</div>
-        </div>
-      </div>
+    <div class="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-3 pl-2 pr-3">
       
-      <div class="flex items-start gap-3 mt-4">
-        <span class="text-[10px] font-bold text-slate-400 shrink-0 w-10 pt-2">تقدير</span>
-        <div class="flex flex-wrap gap-1.5">${gradeChips}</div>
+      <!-- رقم المادة -->
+      <span class="course-num w-6 h-6 rounded-md bg-ksu-600 text-white text-[10px] font-extrabold flex items-center justify-center shrink-0 z-10">${num}</span>
+      
+      <!-- اسم المادة -->
+      <input type="text" class="course-name flex-1 min-w-[40px] text-xs sm:text-sm font-bold text-slate-700 bg-transparent outline-none placeholder:text-slate-300 placeholder:font-normal" placeholder="اسم المادة">
+      
+      <!-- الساعات (قائمة منسدلة) -->
+      <div class="relative flex items-center bg-ksu-50/50 border border-ksu-100/80 rounded-lg h-8 px-1.5 shrink-0">
+        <select class="course-hours appearance-none bg-transparent outline-none text-xs sm:text-sm font-extrabold text-ksu-800 pr-1 pl-5 z-10 cursor-pointer">
+          ${hourOptions}
+        </select>
+        <!-- أيقونة السهم -->
+        <svg class="absolute left-1.5 w-2.5 h-2.5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
       </div>
+
+      <!-- التقدير (قائمة منسدلة) -->
+      <div class="grade-container relative flex items-center rounded-lg h-8 px-1.5 shrink-0 bg-emerald-50 border border-emerald-200 text-emerald-700 transition-colors">
+        <select class="grade-select appearance-none bg-transparent outline-none text-xs sm:text-sm font-extrabold pr-1 pl-4 z-10 cursor-pointer">
+          ${gradeOptions}
+        </select>
+        <!-- أيقونة السهم -->
+        <svg class="absolute left-1.5 w-2.5 h-2.5 opacity-60 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+      </div>
+
+      <!-- زر الحذف -->
+      <button type="button" class="remove-btn w-7 h-7 rounded-md text-slate-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-all shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
     </div>
   `;
 
-  function updateStripe(grade) {
-    card.querySelector('.grade-stripe').className =
-      `grade-stripe absolute top-0 bottom-0 right-0 w-1 bg-gradient-to-b ${gradeStripe[grade]} transition-all duration-300`;
-  }
+  const gradeContainer = card.querySelector('.grade-container');
+  const gradeSelect = card.querySelector('.grade-select');
+  const hoursSelect = card.querySelector('.course-hours');
 
-  function clampHours(val) {
-    return Math.min(HOUR_MAX, Math.max(HOUR_MIN, val));
-  }
-
-  function getHours() {
-    return parseInt(card.querySelector('.course-hours').value, 10);
-  }
-
-  function setHours(val) {
-    const h = clampHours(val);
-    card.querySelector('.course-hours').value = h;
-    card.querySelector('.hours-label').textContent = h === 1 ? 'ساعة' : 'ساعات';
+  // تحديث الألوان عند تغيير التقدير
+  gradeSelect.addEventListener('change', (e) => {
+    const val = e.target.value;
+    card.dataset.selectedGrade = val;
+    card.querySelector('.grade-stripe').className = 
+      `grade-stripe absolute top-0 bottom-0 right-0 w-1 bg-gradient-to-b ${gradeStripe[val]} transition-all duration-300`;
     
-    card.querySelectorAll('.hour-quick').forEach((btn) => {
-      const match = parseInt(btn.dataset.hours, 10) === h;
-      btn.className = `hour-quick flex items-center justify-center w-9 h-9 rounded-xl text-xs font-extrabold transition-all duration-200 ${
-        match ? 'bg-ksu-600 text-white scale-110 shadow-[0_4px_14px_rgba(0,0,0,0.18)] opacity-100 z-10' : 'bg-ksu-50 text-slate-500 hover:bg-ksu-100 opacity-60 scale-95'
-      }`;
-    });
+    gradeContainer.className = `grade-container relative flex items-center rounded-lg h-8 px-1.5 shrink-0 transition-colors ${selectColors[val]}`;
+    
     updateLiveStats();
-  }
-
-  card.querySelector('.hours-minus').addEventListener('click', () => {
-    const cur = getHours();
-    if (!isNaN(cur)) setHours(cur - 1);
   });
 
-  card.querySelector('.hours-plus').addEventListener('click', () => {
-    const cur = getHours();
-    if (!isNaN(cur)) setHours(cur + 1);
-    else setHours(HOUR_MIN);
+  // تحديث الحسابات عند تغيير الساعات
+  hoursSelect.addEventListener('change', () => {
+    updateLiveStats();
   });
 
-  card.querySelector('.course-hours').addEventListener('input', (e) => {
-    const raw = e.target.value;
-    if (raw === '') return;
-    const val = parseInt(raw, 10);
-    if (!isNaN(val)) setHours(val);
-  });
-
-  card.querySelector('.course-hours').addEventListener('blur', (e) => {
-    const val = parseInt(e.target.value, 10);
-    setHours(isNaN(val) ? 3 : val);
-  });
-
-  card.querySelectorAll('.hour-quick').forEach((btn) => {
-    btn.addEventListener('click', () => setHours(parseInt(btn.dataset.hours, 10)));
-  });
-
-  setHours(3);
-
-  card.querySelectorAll('.grade-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      card.querySelectorAll('.grade-chip').forEach((c) => c.classList.remove('selected'));
-      chip.classList.add('selected');
-      card.dataset.selectedGrade = chip.dataset.grade;
-      updateStripe(chip.dataset.grade);
-      updateLiveStats();
-    });
-  });
-
+  // حذف المادة
   card.querySelector('.remove-btn').addEventListener('click', () => {
     card.style.transition = 'all .2s ease-out';
     card.style.opacity = '0';
