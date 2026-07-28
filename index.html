@@ -27,14 +27,23 @@
 </head>
 <body class="bg-ksu-50 text-slate-800 min-h-screen flex flex-col">
 
-  <header class="py-6 text-center">
-    <a href="index.html" class="inline-flex items-center gap-2">
-      <span class="w-10 h-10 rounded-xl bg-ksu-600 text-white flex items-center justify-center text-lg font-bold">i</span>
-      <span class="text-2xl font-bold text-ksu-800">iStudy</span>
-    </a>
-    <p class="text-slate-500 text-sm mt-2">مبادرة من طالب لتسهيل عملية الدراسة</p>
+  <header class="bg-white border-b border-ksu-100">
+    <div class="max-w-xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="index.html" class="text-sm text-ksu-600 hover:text-ksu-800 font-medium flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        الرئيسية
+      </a>
+      
+      <!-- قسم الشعار الجديد -->
+      <div class="flex items-center gap-2">
+        <span class="font-extrabold text-ksu-800 text-lg tracking-tight">iStudy</span>
+        <!-- تأكد إن اسم الصورة logo.png أو غيره حسب اللي ترفعه -->
+        <img src="logo.png" alt="شعار المبادرة" class="w-9 h-9 rounded-xl object-cover shadow-sm border border-slate-100">
+      </div>
+    </div>
   </header>
-
   <main class="flex-1 flex items-center justify-center px-4 pb-16">
     <div class="w-full max-w-lg grid grid-cols-1 sm:grid-cols-2 gap-5">
 
